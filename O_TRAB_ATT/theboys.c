@@ -247,8 +247,8 @@ int escolhe_equipe(local_t locais[N_BASES], heroi_t herois[N_HEROIS], missao_t* 
             destroi_cjt(destroi);
         }
 
-        printf("%6d:MISSAO %2d HAB_EQL %d:", tempo_atual, missao->id, locais[x].id);
-        imprime_cjt(aux);
+        // printf("%6d:MISSAO %2d HAB_EQL %d:", tempo_atual, missao->id, locais[x].id);
+        // imprime_cjt(aux);
 
         /* Verifica se a equipe é apta para a missão */
         if(contido_cjt(missao->habilidades_nec, aux) == 1) {
@@ -272,7 +272,7 @@ int escolhe_equipe(local_t locais[N_BASES], heroi_t herois[N_HEROIS], missao_t* 
 	destroi_cjt(aux);
 
 	if (escolhido == -1) {
-        printf("%6d:MISSAO %2d IMPOSSIVEL (adiada para %d)\n", tempo_atual, missao->id, tempo_atual + 24 * 60);
+        // printf("%6d:MISSAO %2d IMPOSSIVEL (adiada para %d)\n", tempo_atual, missao->id, tempo_atual + 24 * 60);
         adiciona_ordem_lef(lef, cria_evento_missao(missao->id, tempo_atual + 24 * 60));
     }
 	
@@ -373,25 +373,39 @@ int main() {
 					if(m.herois[evento_atual->dado1].paciencia/4 - tamanho_fila(m.locais[evento_atual->dado2].espera) > 0){	
 				 		insere_fila (m.locais[evento_atual->dado2].espera, evento_atual->dado1);
 				 		
-				 		printf("%6d:CHEGA HEROI %2d BASE %d (%2d / %2d), ESPERA %d\n", 
-				 			m.tempo_atual,
-				 			m.herois[evento_atual->dado1].id,
-				 			m.locais[evento_atual->dado2].id,
-				 			m.locais[evento_atual->dado2].presentes->card,
-				 			m.locais[evento_atual->dado2].presentes->max,
-				 			tamanho_fila(m.locais[evento_atual->dado2].espera)
-				 		);
-					} else {
-						adiciona_ordem_lef(
-							lef, 
-							cria_saida(evento_atual->dado1, evento_atual->dado2, m.tempo_atual));
-				
-						printf("%6d:CHEGA HEROI %2d BASE %d (%2d / %2d), DESISTE\n", 
+				 		printf("%6d:CHEGA HEROI %2d BASE %d (%2d / %2d) ESPERA\n", 
 				 			m.tempo_atual,
 				 			m.herois[evento_atual->dado1].id,
 				 			m.locais[evento_atual->dado2].id,
 				 			m.locais[evento_atual->dado2].presentes->card,
 				 			m.locais[evento_atual->dado2].presentes->max
+				 		);
+
+						printf("%6d:ESPERA HEROI %2d BASE %d (%2d) \n", 
+				 			m.tempo_atual,
+				 			m.herois[evento_atual->dado1].id,
+				 			m.locais[evento_atual->dado2].id,
+							tamanho_fila(m.locais[evento_atual->dado2].espera)
+				 		);
+
+
+					} else {
+						adiciona_ordem_lef(
+							lef, 
+							cria_saida(evento_atual->dado1, evento_atual->dado2, m.tempo_atual));
+				
+						printf("%6d:CHEGA HEROI %2d BASE %d (%2d / %2d) DESISTE\n", 
+				 			m.tempo_atual,
+				 			m.herois[evento_atual->dado1].id,
+				 			m.locais[evento_atual->dado2].id,
+				 			m.locais[evento_atual->dado2].presentes->card,
+				 			m.locais[evento_atual->dado2].presentes->max
+				 		);
+
+							printf("%6d:DESIST HEROI %2d BASE %d \n", 
+				 			m.tempo_atual,
+				 			m.herois[evento_atual->dado1].id,
+				 			m.locais[evento_atual->dado2].id
 				 		);
 					}			
 				} else {
@@ -406,14 +420,18 @@ int main() {
 						lef,
 						cria_saida(evento_atual->dado1, evento_atual->dado2, m.tempo_atual + tpl)
 					);
+
+					// int horario_saida = m.tempo_atual + tpl;
 					
-					printf("%6d:ENTRA HEROI %2d Local %d (%2d / %2d), ENTRA\n", 
-				 			m.tempo_atual,
-				 			m.herois[evento_atual->dado1].id,
-				 			m.locais[evento_atual->dado2].id,
-				 			m.locais[evento_atual->dado2].presentes->card,
-				 			m.locais[evento_atual->dado2].presentes->max
-				 		);
+					// printf("%6d:ENTRA HEROI %2d BASE %d (%2d / %2d) SAI %d\n", 
+				 	// 		m.tempo_atual,
+				 	// 		m.herois[evento_atual->dado1].id,
+				 	// 		m.locais[evento_atual->dado2].id,
+				 	// 		m.locais[evento_atual->dado2].presentes->card,
+				 	// 		m.locais[evento_atual->dado2].presentes->max,
+					// 		horario_saida 
+				 	// 	);
+					
 				}
 							
 				break;
@@ -426,15 +444,27 @@ int main() {
 						lef, 
 						cria_chegada(p_fila, evento_atual->dado2, m.tempo_atual)
 					);
-					
-					printf("%6d:AVISA PORTEIRO BASE %d (%2d / %2d), ADMITE %2d\n", 
-				 			m.tempo_atual,
+
+					// printf("%6d:AVISA PORTEIRO BASE %d (%2d / %2d), FILA \n", 
+				 	// 		m.tempo_atual,
 				 			
-				 			m.locais[evento_atual->dado2].id,
-				 			m.locais[evento_atual->dado2].presentes->card,
-				 			m.locais[evento_atual->dado2].presentes->max,
-				 			p_fila
-				 	);
+				 	// 		m.locais[evento_atual->dado2].id,
+				 	// 		m.locais[evento_atual->dado2].presentes->card,
+				 	// 		m.locais[evento_atual->dado2].presentes->max
+				 	// );
+					// printf("[");
+					// imprime_fila(m.locais[evento_atual->dado2].espera);
+					// printf("]");
+					// printf("\n");
+					
+					// printf("%6d:AVISA PORTEIRO BASE %d (%2d / %2d), ADMITE %2d\n", 
+				 	// 		m.tempo_atual,
+				 			
+				 	// 		m.locais[evento_atual->dado2].id,
+				 	// 		m.locais[evento_atual->dado2].presentes->card,
+				 	// 		m.locais[evento_atual->dado2].presentes->max,
+				 	// 		p_fila
+				 	// );
 				 	
 				 	removeu_fila = 1;
 				}
@@ -443,12 +473,7 @@ int main() {
 				v = calcula_velocidade(&m.herois[evento_atual->dado1]);
 				d = distancia_entre_pontos(&m.locais[evento_atual->dado2], &m.locais[id_local_dest]);
 				tdl = d / v;
-				printf("%6d:VIAJA HEROI %2d Local %d DIST %d\n", 
-				 			m.tempo_atual,
-				 			m.herois[evento_atual->dado1].id,
-				 			m.locais[evento_atual->dado2].id,
-				 			d
-					);
+				
 				//FALTA PRINTAR ABAIXO
 
 				//Significado: no instante 46101 o herói 30 inicia uma viagem da base 2 à base 6, com distância 6922 m, velocidade 4763 m/min e chegada prevista no instante 46102.
@@ -459,28 +484,45 @@ int main() {
 					cria_chegada(evento_atual->dado1, id_local_dest, m.tempo_atual + tdl / 15)
 				);
 				
-				if(removeu_fila == 0) 
-					printf("%6d:SAIDA HEROI %2d Local %d (%2d / %2d)\n", 
-				 			m.tempo_atual,
-				 			m.herois[evento_atual->dado1].id,
-				 			m.locais[evento_atual->dado2].id,
-				 			m.locais[evento_atual->dado2].presentes->card,
-				 			m.locais[evento_atual->dado2].presentes->max
-					);
+				if(removeu_fila == 0) {
+
+					// printf("%6d:SAI HEROI %2d BASE %d (%2d / %2d) \n", 
+					// 		m.tempo_atual,
+					// 		m.herois[evento_atual->dado1].id,
+					// 		m.locais[evento_atual->dado2].id,
+					// 		m.locais[evento_atual->dado2].presentes->card,
+					// 		m.locais[evento_atual->dado2].presentes->max);
+
+					
+
+
+					// 	printf("%6d:VIAJA HEROI %2d BASE %d BASE %d DIST %d VEL %d CHEGA %d\n", 
+				 	// 		m.tempo_atual,
+				 	// 		m.herois[evento_atual->dado1].id,
+					// 		id_local_dest,
+				 	// 		m.locais[evento_atual->dado2].id,
+				 	// 		d,
+					// 		m.herois[evento_atual->dado1].velocidade,
+					// 		m.tempo_atual + tdl
+					// );
+
+				}
+
+				
 					
 				removeu_fila = 0;
 				break;
 			case MISSAO:
 				
-				printf("%6d:MISSAO %2d HAB_REQ ", m.tempo_atual, evento_atual->dado1);
-				imprime_cjt(m.missoes[evento_atual->dado1].habilidades_nec);
+				// printf("%6d:MISSAO %2d HAB_REQ ", m.tempo_atual, evento_atual->dado1);
+				// imprime_cjt(m.missoes[evento_atual->dado1].habilidades_nec);
 				local_missao = escolhe_equipe(m.locais, m.herois, &m.missoes[evento_atual->dado1], m.tempo_atual,lef);
 				
 				if(local_missao > -1) {
 				
-					printf("%6d:MISSAO %2d CUMPRIDA BASE %d HEROIS:[ ", m.tempo_atual, evento_atual->dado1, local_missao);
-					imprime_cjt(m.locais[local_missao].presentes);
-					printf(" ]");
+					// printf("%6d:MISSAO %2d CUMPRIDA BASE %d HEROIS:[ ", m.tempo_atual, evento_atual->dado1, local_missao);
+					// imprime_cjt(m.locais[local_missao].presentes);
+					// printf(" ]");
 					for(x = 0; x < m.locais[local_missao].presentes->card; x++) {
 						id_heroi_equipe = m.locais[local_missao].presentes->v[x];
 						m.herois[id_heroi_equipe].experiencia++;
@@ -493,7 +535,7 @@ int main() {
 						tempo_missao = alet(tempo_missao, T_FIM_DO_MUNDO + 100);
 					
 					adiciona_ordem_lef(lef, cria_evento_missao(evento_atual->dado1, tempo_missao));
-					printf("%6d:MISSAO %2d IMPOSSIVEL\n", m.tempo_atual, evento_atual->dado1);
+					// printf("%6d:MISSAO %2d IMPOSSIVEL\n", m.tempo_atual, evento_atual->dado1);
 					
 				}
 						
@@ -501,8 +543,8 @@ int main() {
 			case FIM:
 				printf("%6d:FIM\n", m.tempo_atual);
 				for(x = 0; x < N_HEROIS; x++){
-					printf("HEROI %2d PAC %3d VEL %4d EXP %4d HABS [", m.herois[x].id, m.herois[x].paciencia,m.herois[x].velocidade ,m.herois[x].experiencia);
-					imprime_cjt(m.herois[x].habilidades);
+					// printf("HEROI %2d PAC %3d VEL %4d EXP %4d HABS [", m.herois[x].id, m.herois[x].paciencia,m.herois[x].velocidade ,m.herois[x].experiencia);
+					// imprime_cjt(m.herois[x].habilidades);
 				}
 				
 				destroi_mundo(&m);
