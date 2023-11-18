@@ -239,6 +239,8 @@ void imprime_cjt (conjunto_t *c) {
 	if(!(v = (int*) malloc(sizeof(int) * c->card)))
 		return;
 	
+	printf("[ ");
+
 	for(x=0; x < c->card; x++)
 		v[x] = c->v[x];
 		
@@ -247,10 +249,13 @@ void imprime_cjt (conjunto_t *c) {
 	for(x = 0; x < c->card; x++) 
 		printf("%d ", v[x]);
 	
+
+	printf("] ");
 	printf("\n");
 	
 	free(v);
 }
+
 
 void inicia_iterador_cjt (conjunto_t *c) {
 	c->ptr = 0;

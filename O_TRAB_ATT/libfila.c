@@ -86,9 +86,11 @@ int retira_fila (fila_t *f, int *elemento) {
 
 void imprime_fila (fila_t *f) {
 	nodo_f_t *aux = f->ini;
-	
+
+	printf("[ ");
 	while(aux){
 		printf("%d ", aux->elem);
 		aux = aux->prox;
 	} 
+	printf("] \n");
 }
