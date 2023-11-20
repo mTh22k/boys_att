@@ -7,12 +7,12 @@
 #include "liblef.h"
 
 #define T_INICIO 0
-#define T_FIM_DO_MUNDO 5600
+#define T_FIM_DO_MUNDO 525600
 #define N_TAMANHO_MUNDO 20000
 #define N_HABILIDADES 10
-#define N_HEROIS N_HABILIDADES*5
-#define N_BASES N_HEROIS/6
-#define N_MISSOES T_FIM_DO_MUNDO/100
+#define N_HEROIS (N_HABILIDADES*5)
+#define N_BASES (N_HEROIS/6)
+#define N_MISSOES (T_FIM_DO_MUNDO/100)
 
 #define CHEGADA 1
 #define SAIDA 2
@@ -75,7 +75,14 @@ heroi_t cria_heroi(int id, conjunto_t *hab) {
 	heroi.experiencia = 0;
 	heroi.paciencia = alet(0, 100);
 	heroi.velocidade = alet(50, 5000);
-	heroi.habilidades = cria_subcjt_cjt(hab, n);
+	heroi.habilidades = cria_cjt(n);
+
+	int i;
+    for (i = 0; i < n; i++) {
+        int habilidade = alet(0, N_HABILIDADES - 1);
+        insere_cjt(heroi.habilidades, habilidade);
+    }
+
 	
 	return heroi;
 }
@@ -140,17 +147,28 @@ evento_t *cria_chegada(int id_heroi, int id_local, int tempo) {
 }
 
 missao_t cria_missao(int id, conjunto_t* habilidades) {
-	missao_t missao;
-	int n;
-	
+    missao_t missao;
+    int n;
+
     missao.id = id;
-    n = alet(1,6); // MISSAO MUDAR
-	missao.habilidades_nec = cria_subcjt_cjt (habilidades, n);
-	missao.localizacao.x = alet(0, N_TAMANHO_MUNDO);
+    n = alet(6, 10);
+    
+    // Inicializa o conjunto de habilidades necessárias da missão
+    missao.habilidades_nec = cria_cjt(n);
+    
+    // Preenche o conjunto de habilidades necessárias da missão
+    int i;
+    for (i = 0; i < n; i++) {
+        int habilidade = alet(0, N_HABILIDADES - 1);
+        insere_cjt(missao.habilidades_nec, habilidade);
+    }
+
+    missao.localizacao.x = alet(0, N_TAMANHO_MUNDO);
     missao.localizacao.y = alet(0, N_TAMANHO_MUNDO);
-        
+
     return missao;
 }
+
 
 evento_t *cria_evento_missao(int id, int tempo){
 	evento_t* ev;
