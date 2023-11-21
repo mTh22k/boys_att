@@ -69,7 +69,7 @@ heroi_t cria_heroi(int id, conjunto_t *hab) {
 	heroi_t heroi;
 	int n;
         
-    n = alet(1,3);
+    n = alet(2,5);
      
 	heroi.id = id;
 	heroi.experiencia = 0;
