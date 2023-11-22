@@ -53,7 +53,6 @@ typedef  struct mundo {
 	heroi_t herois[N_HEROIS];
 	local_t locais[N_BASES];
 	missao_t missoes[N_MISSOES] ;
-	conjunto_t *habilidades;
 	int n_herois;
 	int n_habilidades;
 	int n_locais;
@@ -65,11 +64,11 @@ int alet(int min, int max) {
 	return min + (rand() % (max - min + 1));
 }
 
-heroi_t cria_heroi(int id, conjunto_t *hab) {
+heroi_t cria_heroi(int id) {
 	heroi_t heroi;
 	int n;
         
-    n = alet(2,5);
+    n = alet(1,3);
      
 	heroi.id = id;
 	heroi.experiencia = 0;
@@ -112,19 +111,13 @@ mundo_t cria_mundo() {
         	  
     mundo.tempo_atual= T_INICIO; 
 	mundo.n_habilidades = N_HABILIDADES;
-    mundo.habilidades = cria_cjt(mundo.n_habilidades);
     mundo.n_herois = N_HEROIS;
     mundo.n_locais = N_BASES;
 	mundo.n_missoes = N_MISSOES;
     mundo.n_tamanho_mundo = N_TAMANHO_MUNDO;
         
-    for(x = 0; x < mundo.n_habilidades; x++){
-       	if(insere_cjt(mundo.habilidades, rand() % 10) == 0)
-        	x--;
-   	}
-        
    	for(y = 0; y < N_HEROIS; y++)
-        mundo.herois[y] = cria_heroi(y, mundo.habilidades);
+        mundo.herois[y] = cria_heroi(y);
         
    	for(z = 0; z < N_BASES; z++) 
         mundo.locais[z] = cria_local(z);
@@ -146,7 +139,7 @@ evento_t *cria_chegada(int id_heroi, int id_local, int tempo) {
     return ev;
 }
 
-missao_t cria_missao(int id, conjunto_t* habilidades) {
+missao_t cria_missao(int id) {
     missao_t missao;
     int n;
 
@@ -165,7 +158,7 @@ missao_t cria_missao(int id, conjunto_t* habilidades) {
 
     missao.localizacao.x = alet(0, N_TAMANHO_MUNDO);
     missao.localizacao.y = alet(0, N_TAMANHO_MUNDO);
-
+	
     return missao;
 }
 
@@ -265,7 +258,7 @@ int escolhe_equipe(local_t locais[N_BASES], heroi_t herois[N_HEROIS], missao_t* 
             destroi_cjt(destroi);
         }
 
-        printf("%6d:MISSAO %2d HAB_EQL %d:", tempo_atual, missao->id, locais[x].id);
+        printf("%6d:MISSAO %2d HAB_BASE %d:", tempo_atual, missao->id, locais[x].id);
         imprime_cjt(aux);
 
         /* Verifica se a equipe é apta para a missão */
@@ -348,14 +341,13 @@ void destroi_mundo(mundo_t *mundo) {
 		mundo->locais[x].espera = destroi_fila(mundo->locais[x].espera);
 	}
 	
-	mundo->habilidades = destroi_cjt(mundo->habilidades);
 }
 
 int main() {
 	srand(time(NULL));
 
 	mundo_t m = cria_mundo();
-	int id_local, x, tempo_missao, tempo_missao_inicial, tpl, p_fila, id_local_dest, v, d, tdl, local_missao, id_heroi_equipe, removeu_fila = 0, missoes_geradas = 0, missoes_realizadas = 0, total_agendamentos = 0, vezes_agendada = 0;
+	int id_local, x, tempo_missao, tempo_missao_inicial, tpl, p_fila, id_local_dest, v, d, tdl, local_missao, id_heroi_equipe, removeu_fila = 0, missoes_geradas = N_MISSOES, missoes_realizadas = 0, total_agendamentos = 0, vezes_agendada = 0;
 
 	lef_t* lef = cria_lef();
 	nodo_lef_t* aux, *tirado_no;
@@ -368,7 +360,9 @@ int main() {
 	}
 	
 	for(x = 0; x < N_MISSOES; x++) {
-		m.missoes[x] = cria_missao(x, m.habilidades);
+		m.missoes[x] = cria_missao(x);
+		// printf("missao : %d\n",x);
+		// imprime_cjt(m.missoes[x].habilidades_nec);
 		tempo_missao_inicial = alet(0,T_FIM_DO_MUNDO);
 
 		adiciona_ordem_lef(lef, cria_evento_missao(x, tempo_missao_inicial));
@@ -492,9 +486,6 @@ int main() {
 				d = distancia_entre_bases(&m.locais[evento_atual->dado2], &m.locais[id_local_dest]);
 				tdl = d / v;
 				
-				//FALTA PRINTAR ABAIXO
-
-				//Significado: no instante 46101 o herói 30 inicia uma viagem da base 2 à base 6, com distância 6922 m, velocidade 4763 m/min e chegada prevista no instante 46102.
 
 				retira_cjt (m.locais[evento_atual->dado2].presentes, m.herois[evento_atual->dado1].id);
 				adiciona_ordem_lef(
@@ -530,34 +521,25 @@ int main() {
 					
 				removeu_fila = 0;
 				break;
-			case MISSAO:
-				missoes_geradas++;
-				printf("%6d:MISSAO %2d HAB_REQ ", m.tempo_atual, evento_atual->dado1);
-				imprime_cjt(m.missoes[evento_atual->dado1].habilidades_nec);
-				local_missao = escolhe_equipe(m.locais, m.herois, &m.missoes[evento_atual->dado1], m.tempo_atual,lef);
-				
-				if(local_missao > -1) {
-					missoes_realizadas++;
-					printf("%6d:MISSAO %2d CUMPRIDA BASE %d HEROIS: ", m.tempo_atual, evento_atual->dado1, local_missao);
-					imprime_cjt(m.locais[local_missao].presentes);
-	
-					for(x = 0; x < m.locais[local_missao].presentes->card; x++) {
-						id_heroi_equipe = m.locais[local_missao].presentes->v[x];
-						m.herois[id_heroi_equipe].experiencia++;
+				case MISSAO:
+					// missoes_geradas++;
+					printf("%6d:MISSAO %2d HAB_REQ ", m.tempo_atual, evento_atual->dado1);
+					imprime_cjt(m.missoes[evento_atual->dado1].habilidades_nec);
+					local_missao = escolhe_equipe(m.locais, m.herois, &m.missoes[evento_atual->dado1], m.tempo_atual, lef);
+
+					if (local_missao > -1) {
+						missoes_realizadas++;
+						printf("%6d:MISSAO %2d CUMPRIDA BASE %d HEROIS: ", m.tempo_atual, evento_atual->dado1, local_missao);
+						imprime_cjt(m.locais[local_missao].presentes);
+
+						for (x = 0; x < m.locais[local_missao].presentes->card; x++) {
+							id_heroi_equipe = m.locais[local_missao].presentes->v[x];
+							m.herois[id_heroi_equipe].experiencia++;
+						}
+					} else {
+						vezes_agendada++;
 					}
-									
-				} else {
-					vezes_agendada++;
-					tempo_missao = alet(m.tempo_atual,T_FIM_DO_MUNDO);
-					/*VERIFICAR SE MISSÃO FOI CRIADA NO FIM DO MUNDO SE SIM A ADICIONA PARA ALÉM DO FIM DO MUNDO*/
-					if(tempo_missao == T_FIM_DO_MUNDO) 
-						tempo_missao = alet(tempo_missao, T_FIM_DO_MUNDO + 100);
-					
-					adiciona_ordem_lef(lef, cria_evento_missao(evento_atual->dado1, tempo_missao));
-					printf("%6d:MISSAO %2d IMPOSSIVEL\n", m.tempo_atual, evento_atual->dado1);
-					
-				}
-				total_agendamentos += vezes_agendada;		
+					total_agendamentos += vezes_agendada;
 				break;
 			case FIM:
 				printf("%d:FIM\n", m.tempo_atual);
@@ -577,9 +559,6 @@ int main() {
 					destroi_cjt(m.missoes[x].habilidades_nec);
 				}
 
-				//FALTA PRINTAR O QUE TA ABAIXO
-
-				// Foram cumpridas 5242 das 5256 missões geradas (99,73% de sucesso); cada missão foi agendada em média 2,09 vezes até ser cumprida.
 
 				lef = destroi_lef(lef);
 				break;
