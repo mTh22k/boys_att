@@ -106,7 +106,7 @@ local_t cria_local(int id) {
 
 
 mundo_t cria_mundo() {
-	int x, y, z;
+	int y, z;
 	mundo_t mundo;
         	  
     mundo.tempo_atual= T_INICIO; 
@@ -282,49 +282,10 @@ int escolhe_equipe(local_t locais[N_BASES], heroi_t herois[N_HEROIS], missao_t* 
 	
 	destroi_cjt(aux);
 
-	if (escolhido == -1) {
-        printf("%6d:MISSAO %2d IMPOSSIVEL (adiada para %d)\n", tempo_atual, missao->id, tempo_atual + 24 * 60);
-        adiciona_ordem_lef(lef, cria_evento_missao(missao->id, tempo_atual + 24 * 60));
-    }
+	
 	
 	return escolhido;
 }
-
-/*FUNÇÃO PARA ESCOLHER EQUIPE PARA MISSÃO*/
-// int escolhe_equipe(local_t locais[N_BASES], heroi_t herois[N_HEROIS], missao_t* missao, int tempo_atual) {
-// 	conjunto_t* destroi, *aux = cria_cjt(30*5);
-// 	int x, y, escolhido = -1, id_heroi;
-	
-// 	/*LOOP PARA PERCORRER TODOS OS LOCAIS*/
-// 	for(x = 0; x < N_BASES; x++) {
-		
-// 		/* LOOP PARA PERCORRER TODOS OS HEROIS DO LOCAL*/
-// 		for(y = 0; y < locais[x].presentes->card; y++){
-// 			id_heroi = locais[x].presentes->v[y];
-// 			destroi = aux;
-// 			aux = uniao_cjt(herois[id_heroi].habilidades, destroi);
-// 			destroi_cjt(destroi);
-// 		}
-		
-// 		// printf("%6d:MISSAO %2d HAB_EQL %d:", tempo_atual, missao->id, locais[x].id);
-// 		// imprime_cjt(aux);
-		
-// 		if(contido_cjt(missao->habilidades_nec, aux) == 1) {
-// 			if(escolhido == -1) 
-// 				escolhido = x;
-// 			else if(locais[x].presentes->card < locais[escolhido].presentes->card) 
-// 				escolhido = x;
-// 		}
-		
-// 		destroi_cjt(aux);
-// 		aux = cria_cjt(30*5);
-	
-// 	}
-	
-// 	destroi_cjt(aux);
-	
-// 	return escolhido;
-// }
 
 
 
@@ -347,7 +308,7 @@ int main() {
 	srand(time(NULL));
 
 	mundo_t m = cria_mundo();
-	int id_local, x, tempo_missao, tempo_missao_inicial, tpl, p_fila, id_local_dest, v, d, tdl, local_missao, id_heroi_equipe, removeu_fila = 0, missoes_geradas = N_MISSOES, missoes_realizadas = 0, total_agendamentos = 0, vezes_agendada = 0;
+	int id_local, x, tempo_missao_inicial, tpl, p_fila, id_local_dest, v, d, tdl, local_missao, id_heroi_equipe, removeu_fila = 0, missoes_geradas = N_MISSOES, missoes_realizadas = 0, total_agendamentos = 0, vezes_agendada = 0;
 
 	lef_t* lef = cria_lef();
 	nodo_lef_t* aux, *tirado_no;
@@ -537,6 +498,10 @@ int main() {
 							m.herois[id_heroi_equipe].experiencia++;
 						}
 					} else {
+						
+						printf("%6d:MISSAO %2d IMPOSSIVEL (adiada para %d)\n", m.tempo_atual, m.missoes->id, m.tempo_atual + 24 * 60);
+						adiciona_ordem_lef(lef, cria_evento_missao(m.missoes->id, m.tempo_atual + 24 * 60));
+
 						vezes_agendada++;
 					}
 					total_agendamentos += vezes_agendada;
