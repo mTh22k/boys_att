@@ -21,7 +21,7 @@
 
 
 
-typedef  struct heroi {
+typedef struct heroi {
     int id;  
     int paciencia;   
     int velocidade;  
@@ -341,74 +341,67 @@ int main() {
 		free(tirado_no);
 			
 		switch(evento_atual->tipo){
-			case CHEGADA:
-				
-				if(m.locais[evento_atual->dado2].presentes->card == m.locais[evento_atual->dado2].lotacao_maxima) {
-					if(m.herois[evento_atual->dado1].paciencia/4 - tamanho_fila(m.locais[evento_atual->dado2].espera) > 0){	
-				 		insere_fila (m.locais[evento_atual->dado2].espera, evento_atual->dado1);
-				 		
-				 		printf("%6d:CHEGA HEROI %2d BASE %d (%2d / %2d) ESPERA\n", 
-				 			m.tempo_atual,
-				 			m.herois[evento_atual->dado1].id,
-				 			m.locais[evento_atual->dado2].id,
-				 			m.locais[evento_atual->dado2].presentes->card,
-				 			m.locais[evento_atual->dado2].presentes->max
-				 		);
+			 case CHEGADA:
+        if (m.locais[evento_atual->dado2].presentes->card == m.locais[evento_atual->dado2].lotacao_maxima) {
+            int espera;
+            if (vazia_fila(m.locais[evento_atual->dado2].espera) || (m.herois[evento_atual->dado1].paciencia > 10 * tamanho_fila(m.locais[evento_atual->dado2].espera))) {
+                espera = 1;  // true
+            } else {
+                espera = 0;  // false
+            }
 
-						printf("%6d:ESPERA HEROI %2d BASE %d (%2d) \n", 
-				 			m.tempo_atual,
-				 			m.herois[evento_atual->dado1].id,
-				 			m.locais[evento_atual->dado2].id,
-							tamanho_fila(m.locais[evento_atual->dado2].espera)
-				 		);
+            if (espera) {
+                // Herói espera
+                insere_fila(m.locais[evento_atual->dado2].espera, evento_atual->dado1);
 
+                printf("%6d:CHEGA HEROI %2d BASE %d (%2d / %2d) ESPERA\n",
+                       m.tempo_atual,
+                       m.herois[evento_atual->dado1].id,
+                       m.locais[evento_atual->dado2].id,
+                       m.locais[evento_atual->dado2].presentes->card,
+                       m.locais[evento_atual->dado2].presentes->max);
 
-					} else {
-						adiciona_ordem_lef(
-							lef, 
-							cria_saida(evento_atual->dado1, evento_atual->dado2, m.tempo_atual));
-				
-						printf("%6d:CHEGA HEROI %2d BASE %d (%2d / %2d) DESISTE\n", 
-				 			m.tempo_atual,
-				 			m.herois[evento_atual->dado1].id,
-				 			m.locais[evento_atual->dado2].id,
-				 			m.locais[evento_atual->dado2].presentes->card,
-				 			m.locais[evento_atual->dado2].presentes->max
-				 		);
+                printf("%6d:ESPERA HEROI %2d BASE %d (%2d) \n",
+                       m.tempo_atual,
+                       m.herois[evento_atual->dado1].id,
+                       m.locais[evento_atual->dado2].id,
+                       tamanho_fila(m.locais[evento_atual->dado2].espera));
 
-							printf("%6d:DESIST HEROI %2d BASE %d \n", 
-				 			m.tempo_atual,
-				 			m.herois[evento_atual->dado1].id,
-				 			m.locais[evento_atual->dado2].id
-				 		);
-					}			
-				} else {
-				
-					insere_cjt (m.locais[evento_atual->dado2].presentes, evento_atual->dado1);
-					tpl = m.herois[evento_atual->dado1].paciencia / 10 + alet(-2, 6);
-						
-					if(tpl < 1) 
-						tpl = 1;
-							
-					adiciona_ordem_lef(
-						lef,
-						cria_saida(evento_atual->dado1, evento_atual->dado2, m.tempo_atual + tpl)
-					);
+            } else {
+                // Herói desiste
+                adiciona_ordem_lef(lef, cria_saida(evento_atual->dado1, evento_atual->dado2, m.tempo_atual));
 
-					int horario_saida = m.tempo_atual + tpl;
-					
-					printf("%6d:ENTRA HEROI %2d BASE %d (%2d / %2d) SAI %d\n", 
-				 			m.tempo_atual,
-				 			m.herois[evento_atual->dado1].id,
-				 			m.locais[evento_atual->dado2].id,
-				 			m.locais[evento_atual->dado2].presentes->card,
-				 			m.locais[evento_atual->dado2].presentes->max,
-							horario_saida 
-				 		);
-					
-				}
-							
-				break;
+                printf("%6d:CHEGA HEROI %2d BASE %d (%2d / %2d) DESISTE\n",
+                       m.tempo_atual,
+                       m.herois[evento_atual->dado1].id,
+                       m.locais[evento_atual->dado2].id,
+                       m.locais[evento_atual->dado2].presentes->card,
+                       m.locais[evento_atual->dado2].presentes->max);
+
+                printf("%6d:DESIST HEROI %2d BASE %d \n",
+                       m.tempo_atual,
+                       m.herois[evento_atual->dado1].id,
+                       m.locais[evento_atual->dado2].id);
+            }
+        } else {
+			 // Herói entra na base
+    insere_cjt(m.locais[evento_atual->dado2].presentes, evento_atual->dado1);
+
+    // Calcula o tempo de permanência na base (TPB)
+    int TPB = 15 + m.herois[evento_atual->dado1].paciencia * alet(1, 20);
+
+    // Cria e insere na LEF o evento SAI
+    adiciona_ordem_lef(lef, cria_saida(evento_atual->dado1, evento_atual->dado2, m.tempo_atual + TPB));
+
+    printf("%6d:ENTRA HEROI %2d BASE %d (%2d / %2d) SAI %d\n",
+           m.tempo_atual,
+           m.herois[evento_atual->dado1].id,
+           m.locais[evento_atual->dado2].id,
+           m.locais[evento_atual->dado2].presentes->card,
+           m.locais[evento_atual->dado2].presentes->max,
+           m.tempo_atual + TPB);
+        }
+        break;
 			case SAIDA:
 				if(vazia_fila(m.locais[evento_atual->dado2].espera) == 0){
 					retira_fila(m.locais[evento_atual->dado2].espera, &p_fila);
