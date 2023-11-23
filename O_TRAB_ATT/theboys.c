@@ -308,7 +308,7 @@ int main() {
 	srand(time(NULL));
 
 	mundo_t m = cria_mundo();
-	int id_local, x, tempo_missao_inicial, tpl, p_fila, id_local_dest, v, d, tdl, local_missao, id_heroi_equipe, removeu_fila = 0, missoes_geradas = N_MISSOES, missoes_realizadas = 0, total_agendamentos = 0, vezes_agendada = 0;
+	int id_local, x, tempo_missao_inicial, p_fila, id_local_dest, v, d, tdl, local_missao, id_heroi_equipe, removeu_fila = 0, missoes_geradas = N_MISSOES, missoes_realizadas = 0, vezes_agendada = 0;
 
 	lef_t* lef = cria_lef();
 	nodo_lef_t* aux, *tirado_no;
@@ -492,12 +492,12 @@ int main() {
 						}
 					} else {
 						
-						printf("%6d:MISSAO %2d IMPOSSIVEL (adiada para %d)\n", m.tempo_atual, m.missoes->id, m.tempo_atual + 24 * 60);
-						adiciona_ordem_lef(lef, cria_evento_missao(m.missoes->id, m.tempo_atual + 24 * 60));
+						printf("%6d:MISSAO %2d IMPOSSIVEL (adiada para %d)\n", m.tempo_atual, evento_atual->dado1, m.tempo_atual + 24 * 60);
+						adiciona_ordem_lef(lef, cria_evento_missao(evento_atual->dado1, m.tempo_atual + 24 * 60));
 
 						vezes_agendada++;
 					}
-					total_agendamentos += vezes_agendada;
+					
 				break;
 			case FIM:
 				printf("%d:FIM\n", m.tempo_atual);
@@ -507,7 +507,7 @@ int main() {
 				}
 
 				double porcentagem_cumpridas = ((double)missoes_realizadas / missoes_geradas) * 100;
-				double media_agendamentos = ((double)total_agendamentos / missoes_geradas);
+				double media_agendamentos = ((double)vezes_agendada / missoes_geradas);
 
 				printf("%d: %d/%d MISSOES CUMPRIDAS (%.2f%%), MEDIA %.2f TENTATIVAS/MISSAO\n",m.tempo_atual, missoes_realizadas, missoes_geradas, porcentagem_cumpridas, media_agendamentos);
 				
