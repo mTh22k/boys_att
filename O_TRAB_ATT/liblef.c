@@ -2,19 +2,20 @@
 #include <stdlib.h>
 #include "liblef.h"
 
-lef_t * cria_lef () {
-	lef_t* lef;
+lef* cria_lef() {
+    lef* lefAux;
 
-	if(!(lef = (lef_t*) malloc(sizeof(lef_t)))) 
+    if (!(lefAux = (lef*)malloc(sizeof(lef))))
         return NULL;
-    
-    lef->Primeiro = NULL;
-    
-    return lef;   
+
+    lefAux->Primeiro = NULL;
+
+    return lefAux;
 }
 
-lef_t * destroi_lef (lef_t *l) {
-	nodo_lef_t *no = l->Primeiro, *aux;
+
+lef * destroi_lef (lef *l) {
+	nodo_lef *no = l->Primeiro, *aux;
 	
 	int i = 0;
 	while(no) {
@@ -31,10 +32,10 @@ lef_t * destroi_lef (lef_t *l) {
 	return l;
 }
 
-int adiciona_inicio_lef (lef_t *l, evento_t *evento){
-    nodo_lef_t* nodo;
+int add_inicio_lef (lef *l, evento *evento){
+    nodo_lef* nodo;
 	
-    if(!(nodo = (nodo_lef_t*) malloc(sizeof(nodo_lef_t)))) 
+    if(!(nodo = (nodo_lef*) malloc(sizeof(nodo_lef)))) 
         return 0;
     
     nodo->evento=evento;
@@ -43,10 +44,10 @@ int adiciona_inicio_lef (lef_t *l, evento_t *evento){
     return 1;
 }
 
-int adiciona_ordem_lef  (lef_t *l, evento_t *evento) {
-   nodo_lef_t *nodo, *aux;
+int add_ordem_lef  (lef *l, evento *evento) {
+   nodo_lef *nodo, *aux;
 	
-   if(!(nodo = (nodo_lef_t*) malloc(sizeof(nodo_lef_t)))) 
+   if(!(nodo = (nodo_lef*) malloc(sizeof(nodo_lef)))) 
         return 0;
         
     nodo->evento=evento;
@@ -70,6 +71,6 @@ int adiciona_ordem_lef  (lef_t *l, evento_t *evento) {
     return 1;
 }
 
-evento_t * obtem_primeiro_lef (lef_t *l) {
+evento * obtem_primeiro_lef (lef *l) {
 	return l->Primeiro->evento;
 }

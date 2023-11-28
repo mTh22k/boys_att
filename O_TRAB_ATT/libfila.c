@@ -2,21 +2,21 @@
 #include <stdlib.h>
 #include "libfila.h"
 
-fila_t * cria_fila (){
-    fila_t* fila;
+fila * cria_fila (){
+    fila* filaAux;
    
-    if(!(fila = (fila_t*) malloc(sizeof(fila_t)))) 
+    if(!(filaAux = (fila*) malloc(sizeof(fila)))) 
         return NULL;            
     
-    fila->ini = NULL;
-    fila->fim = NULL;
-    fila->tamanho= 0;
+    filaAux->ini = NULL;
+    filaAux->fim = NULL;
+    filaAux->tamanho= 0;
 
-    return fila;
+    return filaAux;
 }
 
 
-fila_t * destroi_fila (fila_t *f) {	
+fila * destroi_fila (fila *f) {	
 	int x = 0;
 	int y;
 	int pont = 0;
@@ -35,21 +35,21 @@ fila_t * destroi_fila (fila_t *f) {
     return f;
 }
 
-int vazia_fila (fila_t *f) {
+int vazia_fila (fila *f) {
 	if(f->ini == NULL) 
 		return 1;
 	
 	return 0;
 }
 
-int tamanho_fila (fila_t *f) {
+int tamanho_fila (fila *f) {
 	return f->tamanho;
 }
 
-int insere_fila (fila_t *f, int elemento) {
-	nodo_f_t  *item = NULL;
+int insere_fila (fila *f, int elemento) {
+	nodo_fila_f  *item = NULL;
 	
-	if(!(item = (nodo_f_t*) malloc(sizeof(nodo_f_t)))) 
+	if(!(item = (nodo_fila_f*) malloc(sizeof(nodo_fila_f)))) 
         return 0;            
     		
     item->elem = elemento;
@@ -68,8 +68,8 @@ int insere_fila (fila_t *f, int elemento) {
 	return 1;
 }
 
-int retira_fila (fila_t *f, int *elemento) {
-	nodo_f_t  *item = NULL;
+int retira_fila (fila *f, int *elemento) {
+	nodo_fila_f  *item = NULL;
 	
 	if(vazia_fila(f) == 0) {
 		item = f->ini;
@@ -84,8 +84,8 @@ int retira_fila (fila_t *f, int *elemento) {
 	
 }
 
-void imprime_fila (fila_t *f) {
-	nodo_f_t *aux = f->ini;
+void imprime_fila (fila *f) {
+	nodo_fila_f *aux = f->ini;
 
 	printf("[ ");
 	while(aux){

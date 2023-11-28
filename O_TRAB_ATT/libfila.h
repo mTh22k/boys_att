@@ -1,48 +1,39 @@
-/*
- * TAD fila
- * Autores:
- *    Marcos Alexandre Castilho
- *    Luis Carlos Erpen de Bona
- *
- * Primeira versão em 18/10/2019
- * Versao 1.0.0 de 10/11/2021
- * Versao 1.0.1 de 08/2022
- * Versao 2.0.0 de 14/12/2022
- */
-
-struct nodo_f {
+// Definição de um nó da fila, que contém um elemento e um ponteiro para o próximo nó.
+struct nodo_fila {
     int elem;
-    struct nodo_f *prox;
+    struct nodo_fila *prox;
 };
-typedef struct nodo_f nodo_f_t;
 
+// Tipo definido para simplificar a declaração de variáveis do tipo nodo_fila.
+typedef struct nodo_fila nodo_fila_f;
+
+// Definição da estrutura fila, que mantém ponteiros para o início e o fim da fila, bem como o tamanho da fila.
 struct fila {
-    nodo_f_t *ini;
-    nodo_f_t *fim;
-    int tamanho; /* numero de elementos na fila */
+    nodo_fila_f *ini;
+    nodo_fila_f *fim;
+    int tamanho; 
 };
-typedef struct fila fila_t;
 
-/* Cria uma fila vazia e a retorna, se falhar retorna NULL. */
-fila_t *cria_fila ();
+// Tipo definido para simplificar a declaração de variáveis do tipo fila.
+typedef struct fila fila;
 
-/* Remove todos os elementos da fila, libera espaco e devolve NULL. */
-fila_t *destroi_fila (fila_t *f);
+// Função para criar e inicializar uma fila vazia.
+fila *cria_fila();
 
-/* Retorna 1 se a fila esta vazia e 0 caso contrario. */
-int vazia_fila (fila_t *f);
+// Função para destruir a fila, liberando todos os recursos alocados.
+fila *destroi_fila(fila *f);
 
-/* Retorna o numero de elementos da fila. */
-int tamanho_fila (fila_t *f);
+// Função para verificar se a fila está vazia.
+int vazia_fila(fila *f);
 
-/* Insere o elemento no final da fila (politica FIFO).
- * Retorna 1 se a operacao foi bem sucedida e 0 caso contrario. */
-int insere_fila (fila_t *f, int elemento);
+// Função para obter o tamanho atual da fila.
+int tamanho_fila(fila *f);
 
-/* Remove o elemento do inicio da fila (politica FIFO) e o retorna
- * no parametro *elemento. Retorna 1 se a operacao foi bem sucedida
- * e 0 caso contrario. */
-int retira_fila (fila_t *f, int *elemento);
+// Função para inserir um elemento no final da fila.
+int insere_fila(fila *f, int elemento);
 
-/* para depuracao */
-void imprime_fila (fila_t *f);
+// Função para retirar um elemento do início da fila, armazenando-o na variável passada por referência.
+int retira_fila(fila *f, int *elemento);
+
+// Função para imprimir os elementos da fila.
+void imprime_fila(fila *f);
