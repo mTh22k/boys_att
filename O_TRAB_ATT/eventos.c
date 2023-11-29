@@ -241,117 +241,116 @@ void evento_chega(Mundo m, evento *evento_atual, lef *lef)
     }
 }
 
-void evento_missao(Mundo m, evento *evento_atual, lef *lef, int *missoes_realizadas, int *vezes_agendada)
+void evento_missao(Mundo *m, evento *evento_atual, lef *lef, int *missoes_realizadas, int *vezes_agendada)
 {
-    printf("%6d:MISSAO %2d HAB REQ ", m.tempo_atual, evento_atual->dado1);
-    imprime_cjt(m.missoes[evento_atual->dado1].habilidades_nec);
+    printf("%6d:MISSAO %2d HAB REQ ", m->tempo_atual, evento_atual->dado1);
+    imprime_cjt(m->missoes[evento_atual->dado1].habilidades_nec);
 
-    int local_missao = escolhe_equipe(m.bases, m.herois, &m.missoes[evento_atual->dado1], m.tempo_atual, lef);
+    int local_missao = escolhe_equipe(m->bases, m->herois, &m->missoes[evento_atual->dado1], m->tempo_atual, lef);
 
     if (local_missao > -1)
     {
         // MISSÃO CUMPRIDA
         (*missoes_realizadas)++; // Incrementa o número de missões cumpridas
 
-        printf("%6d:MISSAO %2d CUMPRIDA BASE %d HEROIS: ", m.tempo_atual, evento_atual->dado1, local_missao);
-        imprime_cjt(m.bases[local_missao].presentes);
+        printf("%6d:MISSAO %2d CUMPRIDA BASE %d HEROIS: ", m->tempo_atual, evento_atual->dado1, local_missao);
+        imprime_cjt(m->bases[local_missao].presentes);
 
         // Incrementa a experiência dos heróis envolvidos na missão cumprida
-        for (int x = 0; x < m.bases[local_missao].presentes->card; x++)
+        for (int x = 0; x < m->bases[local_missao].presentes->card; x++)
         {
-            int id_heroi_equipe = m.bases[local_missao].presentes->v[x];
-            m.herois[id_heroi_equipe].experiencia++;
+            int id_heroi_equipe = m->bases[local_missao].presentes->v[x];
+            m->herois[id_heroi_equipe].experiencia++;
         }
     }
     else
     {
         // Imprime informações sobre a impossibilidade da missão e agenda um novo evento de missão
-        printf("%6d:MISSAO %2d IMPOSSIVEL\n", m.tempo_atual, evento_atual->dado1);
-        add_ordem_lef(lef, cria_evento_missao(evento_atual->dado1, m.tempo_atual + 24 * 60));
+        printf("%6d:MISSAO %2d IMPOSSIVEL\n", m->tempo_atual, evento_atual->dado1);
+        add_ordem_lef(lef, cria_evento_missao(evento_atual->dado1, m->tempo_atual + 24 * 60));
 
         (*vezes_agendada)++; // Incrementa o número de vezes que a missão foi agendada
     }
 }
 
-void evento_viaja(Mundo m, evento *evento_atual, lef *lef, int *removeu_fila)
+void evento_sai(Mundo *m, evento *evento_atual, lef *lef)
 {
-    // EVENTO VIAJA
-    int id_local_dest = rand() % N_BASES;
-    int v = m.herois[evento_atual->dado1].velocidade;
-    int d = distancia_entre_bases(&m.bases[evento_atual->dado2], &m.bases[id_local_dest]);
-    int tdl = d / v;
-
-    // Remove o herói da base de origem
-    retira_cjt(m.bases[evento_atual->dado2].presentes, m.herois[evento_atual->dado1].id);
-
-    // Adiciona um evento de chegada na LEF para o herói que viajou
-    add_ordem_lef(
-        lef,
-        cria_chegada(evento_atual->dado1, id_local_dest, m.tempo_atual + tdl / 15));
-
-    // Se não removeu da fila, imprime eventos de saída e viagem
-    if (*removeu_fila == 0)
-    {
-
-        printf("%6d:SAI HEROI %2d BASE %d (%2d / %2d) \n",
-               m.tempo_atual,
-               m.herois[evento_atual->dado1].id,
-               m.bases[evento_atual->dado2].id,
-               m.bases[evento_atual->dado2].presentes->card,
-               m.bases[evento_atual->dado2].presentes->max);
-
-        printf("%6d:VIAJA HEROI %2d BASE %d BASE %d DIST %d VEL %d CHEGA %d\n",
-               m.tempo_atual,
-               m.herois[evento_atual->dado1].id,
-               id_local_dest,
-               m.bases[evento_atual->dado2].id,
-               d,
-               m.herois[evento_atual->dado1].velocidade,
-               m.tempo_atual + tdl);
-    }
-
-    *removeu_fila = 0;
-}
-
-void evento_avisa(Mundo m, evento *evento_atual, lef *lef, int *removeu_fila, int *p_fila)
-{
-    // Retira o herói da fila de espera e coloca na base
-    retira_fila(m.bases[evento_atual->dado2].espera, p_fila);
-    insere_cjt(m.bases[evento_atual->dado2].presentes, *p_fila);
-
-    // Adiciona um evento de chegada na LEF para o herói que saiu da fila
-    add_inicio_lef(
-        lef,
-        cria_chegada(*p_fila, evento_atual->dado2, m.tempo_atual));
-
-    printf("%6d:AVISA PORTEIRO BASE %d (%2d / %2d), FILA ",
-           m.tempo_atual,
-           m.bases[evento_atual->dado2].id,
-           m.bases[evento_atual->dado2].presentes->card,
-           m.bases[evento_atual->dado2].presentes->max);
-
-    imprime_fila(m.bases[evento_atual->dado2].espera);
-
-    printf("%6d:AVISA PORTEIRO BASE %d ADMITE %2d\n",
-           m.tempo_atual,
-           m.bases[evento_atual->dado2].id,
-           *p_fila);
-
-    *removeu_fila = 1;
-}
-
-void evento_sai(Mundo m, evento *evento_atual, lef *lef)
-{
-    // EVENTO SAI
     int removeu_fila = 0, p_fila;
     // Verifica se há heróis na fila de espera
-    if (vazia_fila(m.bases[evento_atual->dado2].espera) == 0)
+    if (vazia_fila(m->bases[evento_atual->dado2].espera) == 0)
     {
         // Passa o endereço de p_fila para a função evento_avisa
         evento_avisa(m, evento_atual, lef, &removeu_fila, &p_fila);
     }
 
     evento_viaja(m, evento_atual, lef, &removeu_fila);
+}
+
+void evento_viaja(Mundo *m, evento *evento_atual, lef *lef, int *removeu_fila)
+{
+    // EVENTO VIAJA
+    int id_local_dest = rand() % N_BASES;
+    int v = m->herois[evento_atual->dado1].velocidade;
+    int d = distancia_entre_bases(&m->bases[evento_atual->dado2], &m->bases[id_local_dest]);
+    int tdl = d / v;
+
+    // Remove o herói da base de origem
+    retira_cjt(m->bases[evento_atual->dado2].presentes, m->herois[evento_atual->dado1].id);
+
+    // Adiciona um evento de chegada na LEF para o herói que viajou
+    add_ordem_lef(
+        lef,
+        cria_chegada(evento_atual->dado1, id_local_dest, m->tempo_atual + tdl / 15));
+
+    // Se não removeu da fila, imprime eventos de saída e viagem
+    if (*removeu_fila == 0)
+    {
+
+        printf("%6d:SAI HEROI %2d BASE %d (%2d / %2d) \n",
+               m->tempo_atual,
+               m->herois[evento_atual->dado1].id,
+               m->bases[evento_atual->dado2].id,
+               m->bases[evento_atual->dado2].presentes->card,
+               m->bases[evento_atual->dado2].presentes->max);
+
+        printf("%6d:VIAJA HEROI %2d BASE %d BASE %d DIST %d VEL %d CHEGA %d\n",
+               m->tempo_atual,
+               m->herois[evento_atual->dado1].id,
+               id_local_dest,
+               m->bases[evento_atual->dado2].id,
+               d,
+               m->herois[evento_atual->dado1].velocidade,
+               m->tempo_atual + tdl);
+    }
+
+    *removeu_fila = 0;
+}
+
+void evento_avisa(Mundo *m, evento *evento_atual, lef *lef, int *removeu_fila, int *p_fila)
+{
+    // Retira o herói da fila de espera e coloca na base
+    retira_fila(m->bases[evento_atual->dado2].espera, p_fila);
+    insere_cjt(m->bases[evento_atual->dado2].presentes, *p_fila);
+
+    // Adiciona um evento de chegada na LEF para o herói que saiu da fila
+    add_inicio_lef(
+        lef,
+        cria_chegada(*p_fila, evento_atual->dado2, m->tempo_atual));
+
+    printf("%6d:AVISA PORTEIRO BASE %d (%2d / %2d), FILA ",
+           m->tempo_atual,
+           m->bases[evento_atual->dado2].id,
+           m->bases[evento_atual->dado2].presentes->card,
+           m->bases[evento_atual->dado2].presentes->max);
+
+    imprime_fila(m->bases[evento_atual->dado2].espera);
+
+    printf("%6d:AVISA PORTEIRO BASE %d ADMITE %2d\n",
+           m->tempo_atual,
+           m->bases[evento_atual->dado2].id,
+           *p_fila);
+
+    *removeu_fila = 1;
 }
 
 void evento_fim(Mundo m, evento *evento_atual, lef *lef, int *missoes_realizadas, int *vezes_agendada, int missoes_geradas)

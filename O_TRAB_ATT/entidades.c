@@ -80,7 +80,7 @@ Missao cria_missao(int id)
 	int n = alet(6, 10);
 
 	missao.habilidades_nec = cria_cjt(n);
-	
+
 	for (int i = 0; i < n; i++)
 	{
 		int habilidade = alet(0, N_HABILIDADES - 1);

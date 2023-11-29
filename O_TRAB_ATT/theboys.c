@@ -61,14 +61,14 @@ int main()
 			break;
 		case SAIDA:
 
-			evento_sai(m, evento_atual, lef);
+    		evento_sai(&m, evento_atual, lef);
 
-			break;
+    	break;
 		case MISSAO:
 
-			evento_missao(m, evento_atual, lef, &missoes_realizadas, &vezes_agendada);
+    		evento_missao(&m, evento_atual, lef, &missoes_realizadas, &vezes_agendada);
+    	break;
 
-			break;
 		case FIM:
 
 			evento_fim(m, evento_atual, lef, &missoes_realizadas, &vezes_agendada, missoes_geradas);

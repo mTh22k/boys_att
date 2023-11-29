@@ -39,19 +39,19 @@ void evento_chega(Mundo m, evento *evento_atual, lef *lef);
 
 // Função que simula o evento de uma missão ocorrer
 // Inclui a escolha de uma equipe para realizar a missão e o tratamento de sucesso ou falha
-void evento_missao(Mundo m, evento *evento_atual, lef *lef, int *missoes_realizadas, int *vezes_agendada);
+void evento_missao(Mundo *m, evento *evento_atual, lef *lef, int *missoes_realizadas, int *vezes_agendada);
 
 // Função que simula o evento de um herói viajar entre bases
 // Inclui o cálculo da distância, remoção da base de origem e criação de um evento de chegada
-void evento_viaja(Mundo m, evento *evento_atual, lef *lef, int *removeu_fila);
+void evento_viaja(Mundo *m, evento *evento_atual, lef *lef, int *removeu_fila);
 
 // Função que simula o evento de um herói ser avisado para entrar em uma base
 // Inclui a remoção do herói da fila de espera e a exibição de informações
-void evento_avisa(Mundo m, evento *evento_atual, lef *lef, int *removeu_fila, int *p_fila);
+void evento_avisa(Mundo *m, evento *evento_atual, lef *lef, int *removeu_fila, int *p_fila);
 
 // Função que simula o evento de um herói sair de uma base e viajar
 // Inclui a remoção do herói da base e a criação de um evento de chegada em outra base
-void evento_sai(Mundo m, evento *evento_atual, lef *lef);
+void evento_sai(Mundo *m, evento *evento_atual, lef *lef);
 
 // Função que simula o evento de fim do mundo
 // Inclui a exibição de estatísticas finais e a destruição do mundo e da lista de eventos futuros
