@@ -6,10 +6,10 @@ LDFLAGS = -lm
 CC = gcc
 
 # arquivos-objeto
-	objects = theboys.o libconjunto.o  liblef.o libfila.o 
+	objects = theboys.o libconjunto.o  liblef.o libfila.o entidades.o eventos.o
      
-theboys: theboys.o libconjunto.o  liblef.o libfila.o
-	$(CC) -o theboys theboys.o libconjunto.o  liblef.o libfila.o $(LDFLAGS)
+theboys: theboys.o libconjunto.o  liblef.o libfila.o entidades.o eventos.o
+	$(CC) -o theboys theboys.o libconjunto.o  liblef.o libfila.o entidades.o eventos.o $(LDFLAGS)
 
 libconjunto.o: libconjunto.c
 	$(CC) -c $(CFLAGS) libconjunto.c
@@ -19,6 +19,12 @@ liblef.o: liblef.c
 
 libfila.o: libfila.c
 	$(CC) -c $(CFLAGS) libfila.c
+
+entidades.o: entidades.c
+	$(CC) -c $(CFLAGS) entidades.c
+
+eventos.o: eventos.c
+	$(CC) -c $(CFLAGS) eventos.c
 
 theboys.o: theboys.c
 	$(CC) -c $(CFLAGS) theboys.c
